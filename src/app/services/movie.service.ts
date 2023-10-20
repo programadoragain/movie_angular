@@ -12,16 +12,17 @@ export class MovieService {
 
   constructor(private http: HttpClient) { }
 
-  getLatestMovies(): Observable<any> {
+  getLatestMovie(): Observable<any> {
     return this.http.get<any>(this.url + '/movie/latest');
   }
 
   getPopularMovies(): Observable<any> {
-    return this.http.get<any>(this.url + '/movie/popular?api_key=' + environment.api_key);  
+    return this.http.get<any>(this.url + '/movie/popular');  
   }
 
   getNowPlayingMovies(): Observable<any> {
-    return this.http.get<any>(this.url + '/movie/now_playing?api_key=' + environment.api_key);  
+    return this.http.get<any>(this.url + '/movie/now_playing'); 
+  //return this.http.get<any>(this.url + '/movie/now_playing?api_key=' + environment.api_key);  
   }
 
   getTopRatedMovies(): Observable<any> {

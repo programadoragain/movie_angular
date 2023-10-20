@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/app/environments/environment';
-import { Movie } from 'src/app/models/movie';
+import { Movie, Results } from 'src/app/models/movie';
 import { MovieService } from 'src/app/services/movie.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { MovieService } from 'src/app/services/movie.service';
 
 export class DashboardComponent implements OnInit {
 
-  latestMovies!: Movie;
+  latestMovie!: Results;
   popularMovies!: Movie;
   nowPlayingMovies!: Movie;
   topRatedMovies!: Movie;
@@ -23,21 +23,36 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.getLatestMovies();
+    this.getTrendingMovies();
+    this.getPopularMovies();
+    this.getUpComingMovies();
+    this.getTopRatedMovies();
+    this.getNowPlayingMovies();
   }
 
   getLatestMovies() {
-    this.movieService.getLatestMovies().subscribe((response: Movie) => {
-      this.latestMovies= response;
-      console.log(this.latestMovies);
+    this.movieService.getLatestMovie().subscribe((response: any) => {
+      this.latestMovie= this.modifyBackdropPath(response);
+      console.log(this.latestMovie.backdrop_path);
     }, (err: any) => { 
-      console.log("error in try to getLatestMovies", err) ;
+      console.log("error in try to getLatestMovie", err) ;
     })
   }  
+
+  modifyBackdropPath(response: any): any {
+    if (response.backdrop_path) {
+      response.backdrop_path= 'https://image.tmdb.org/t/p/original' + response.backdrop_path + '?api_key=' + environment.api_key;
+    }
+    else
+      response.backdrop_path= "";
+
+    return response;
+  }
 
   getPopularMovies() {
     this.movieService.getPopularMovies().subscribe((response: Movie) => {
       this.popularMovies= this.modifyData(response);
-      console.log(this.latestMovies);
+      console.log(this.popularMovies);
     }, (err: any) => { 
       console.log("error in try to getPopularMovies", err) ;
     })
@@ -74,13 +89,11 @@ export class DashboardComponent implements OnInit {
       console.log("error in try to getUpComingMovies", err) ;
     })
   }  
+
   modifyData(movies: Movie) : Movie {
     if (movies.results) {
       movies.results.forEach(element => {
-        element.backdrop_path= 'https://image.tmdb.org/t/p/original' + element.backdrop_path + 'api_key?' + environment.api_key;        
-        if (!element.title) {
-          element.title= element?.name;
-        }
+        element.backdrop_path= 'https://image.tmdb.org/t/p/original' + element.backdrop_path + '?api_key=' + environment.api_key;        
       });
     }
     return movies;
